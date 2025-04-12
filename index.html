@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 35px;
+    }
+
+    input[type="text"] {
+      padding: 14px 20px;
+      border-radius: 30px;
+      border: none;
+      width: 260px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #ccc;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 15px rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.15);
+    }
+
+    button {
+      padding: 14px 30px;
+      border: none;
+      background: #00f2fe;
+      color: #141e30;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00f2fe, 0 0 40px #00f2fe55;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00f2fe, 0 0 60px #00f2feaa;
+    }
+
+    .weather-box {
+      background: rgba(255,255,255,0.05);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+      max-width: 90%;
+      min-width: 300px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .weather-box h2 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: #ffffffdd;
+    }
+
+    .temp {
+      font-size: 56px;
+      font-weight: bold;
+      margin: 15px 0;
+      color: #00f2fe;
+      text-shadow: 0 0 10px #00f2fe77;
+    }
+
+    .desc {
+      font-size: 22px;
+      font-style: italic;
+      margin-bottom: 15px;
+      color: #ddd;
+    }
+
+    .icon {
+      width: 80px;
+      margin: 10px auto;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.2));
+    }
+
+    p {
+      margin: 6px 0;
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .temp {
+        font-size: 44px;
+      }
+
+      .input-group {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      input[type="text"], button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>✨ Weather App</h1>
+  <div class="input-group">
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+  </div>
+
+  <div class="weather-box" id="weatherBox">
+    <p>Search for a city's weather above ☝</p>
+  </div>
+
+  <script>
+    const apiKey = '77fdbd2dd9da4023ba4110909251004';
+
+    const cityInput = document.getElementById('cityInput');
+    const weatherBox = document.getElementById('weatherBox');
+
+    cityInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        getWeather();
+      }
+    });
+
+    function getWeather() {
+      const city = cityInput.value.trim();
+      
+      if (!city) {
+        weatherBox.innerHTML = "<p>Please enter a city name.</p>";
+        return;
+      }
+
+      fetch(`http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("City not found");
+          }
+          return response.json();
+        })
+        .then(data => {
+          weatherBox.innerHTML = `
+            <h2>Weather in ${data.location.name}, ${data.location.country}</h2>
+            <img src="${data.current.condition.icon}" alt="Icon" class="icon">
+            <div class="temp">${data.current.temp_c}°C</div>
+            <div class="desc">${data.current.condition.text}</div>
+            <p>Humidity: ${data.current.humidity}%</p>
+            <p>Wind: ${data.current.wind_kph} km/h</p>
+          `;
+        })
+        .catch(error => {
+          weatherBox.innerHTML = `<p>${error.message}</p>`;
+        });
+    }
+  </script>
+
+</body>
+</html>
