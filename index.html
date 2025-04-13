@@ -183,7 +183,7 @@
         return;
       }
 
-      fetch(`http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`)
+      fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`)
         .then(response => {
           if (!response.ok) {
             throw new Error("City not found");
